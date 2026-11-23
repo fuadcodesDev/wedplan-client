@@ -33,12 +33,14 @@ export default function SignUpPage() {
     setLoading(true);
 
     try {
-      const result = await authClient.signUp.email({
-        name,
-        email,
-        password,
-        role,
-      });
+     const signUpData = {
+  name,
+  email,
+  password,
+  role,
+};
+
+const result = await authClient.signUp.email(signUpData);
 
       if (result.error) {
         setError(result.error.message || "Could not create your account.");
