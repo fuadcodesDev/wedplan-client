@@ -1,4 +1,7 @@
 
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
@@ -26,58 +29,52 @@ const categories = [
   { name: "Wedding Fashion", icon: Shirt },
 ];
 
-const featuredServices = [
-  {
-    name: "Elegant Wedding Photography",
-    category: "Photography",
-    location: "Dhaka, Bangladesh",
-    price: "৳25,000",
-    image:
-      "https://images.unsplash.com/photo-1537633552985-df8429e8048b?w=900",
-  },
-  {
-    name: "Garden Wedding Venue",
-    category: "Wedding Venues",
-    location: "Sylhet, Bangladesh",
-    price: "৳80,000",
-    image:
-      "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?w=900",
-  },
-  {
-    name: "Floral Wedding Decoration",
-    category: "Decoration",
-    location: "Dhaka, Bangladesh",
-    price: "৳35,000",
-    image:
-      "https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=900",
-  },
-  {
-    name: "Luxury Wedding Catering",
-    category: "Catering",
-    location: "Chattogram, Bangladesh",
-    price: "৳45,000",
-    image:
-      "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=900",
-  },
-  {
-    name: "Bridal Makeup Studio",
-    category: "Makeup & Styling",
-    location: "Sylhet, Bangladesh",
-    price: "৳12,000",
-    image:
-      "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=900",
-  },
-  {
-    name: "Beautiful Wedding Fashion",
-    category: "Wedding Fashion",
-    location: "Dhaka, Bangladesh",
-    price: "৳18,000",
-    image:
-      "https://images.unsplash.com/photo-1594552072238-b8a33785b261?w=900",
-  },
-];
+type Service = {
+  _id: string;
+  serviceName: string;
+  category: string;
+  description: string;
+  price: number;
+  location: string;
+  images: string[];
+};
 
 export default function Home() {
+  const [featuredServices, setFeaturedServices] = useState<Service[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [serviceError, setServiceError] = useState("");
+
+  useEffect(() => {
+    const getFeaturedServices = async () => {
+      try {
+        setLoading(true);
+        setServiceError("");
+
+        const response = await fetch(
+          "http://localhost:5001/api/services?limit=6&page=1"
+        );
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || "Could not load featured services");
+        }
+
+        setFeaturedServices(result.data.slice(0, 6));
+      } catch (error) {
+        setServiceError(
+          error instanceof Error
+            ? error.message
+            : "Something went wrong while loading services."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getFeaturedServices();
+  }, []);
+
   return (
     <main className="min-h-screen bg-[#FAF9F6] text-[#303B32]">
       <Navbar />
@@ -216,51 +213,88 @@ export default function Home() {
           </Link>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {featuredServices.map((service) => (
-            <article
-              key={service.name}
-              className="group overflow-hidden rounded-2xl border border-[#EAE7DF] bg-white transition duration-300 hover:-translate-y-1 hover:shadow-xl"
-            >
+        {loading ? (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3, 4, 5, 6].map((item) => (
               <div
-                className="h-56 bg-cover bg-center transition duration-500 group-hover:scale-[1.02]"
-                style={{ backgroundImage: `url('${service.image}')` }}
+                key={item}
+                className="h-80 animate-pulse rounded-2xl bg-[#EEECE5]"
               />
-
-              <div className="p-5">
-                <p className="text-xs font-semibold uppercase tracking-wider text-[#A47D52]">
-                  {service.category}
-                </p>
-
-                <h3 className="mt-2 text-lg font-semibold">
-                  {service.name}
-                </h3>
-
-                <p className="mt-2 flex items-center gap-2 text-sm text-[#85877F]">
-                  <MapPin size={15} /> {service.location}
-                </p>
-
-                <div className="mt-5 flex items-center justify-between border-t border-[#EEECE5] pt-4">
-                  <div>
-                    <p className="text-xs text-[#85877F]">Starting from</p>
-
-                    <p className="mt-1 font-semibold text-[#526B57]">
-                      {service.price}
-                    </p>
-                  </div>
-
-                  <Link
-                    href="/services"
-                    aria-label={`Explore ${service.name}`}
-                    className="rounded-full bg-[#E9EDE5] p-3 text-[#526B57] transition hover:bg-[#526B57] hover:text-white"
-                  >
-                    <ArrowUpRight size={19} />
-                  </Link>
+            ))}
+          </div>
+        ) : serviceError ? (
+          <div className="rounded-2xl border border-red-200 bg-red-50 p-8 text-center">
+            <p className="text-sm text-red-700">{serviceError}</p>
+          </div>
+        ) : featuredServices.length === 0 ? (
+          <div className="rounded-2xl border border-[#EAE7DF] bg-white p-12 text-center">
+            <h3 className="text-xl font-semibold">No featured services yet</h3>
+            <p className="mt-2 text-sm text-[#777B72]">
+              Approved wedding services will appear here.
+            </p>
+            <Link
+              href="/services"
+              className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-[#526B57]"
+            >
+              Browse services <ArrowRight size={16} />
+            </Link>
+          </div>
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {featuredServices.map((service) => (
+              <article
+                key={service._id}
+                className="group overflow-hidden rounded-2xl border border-[#EAE7DF] bg-white transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+              >
+                <div className="h-56 overflow-hidden bg-[#EEECE5]">
+                  {service.images?.[0] ? (
+                    <img
+                      src={service.images[0]}
+                      alt={service.serviceName}
+                      className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center text-sm text-[#85877F]">
+                      No image available
+                    </div>
+                  )}
                 </div>
-              </div>
-            </article>
-          ))}
-        </div>
+
+                <div className="p-5">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-[#A47D52]">
+                    {service.category}
+                  </p>
+
+                  <h3 className="mt-2 text-lg font-semibold">
+                    {service.serviceName}
+                  </h3>
+
+                  <p className="mt-2 flex items-center gap-2 text-sm text-[#85877F]">
+                    <MapPin size={15} /> {service.location}
+                  </p>
+
+                  <div className="mt-5 flex items-center justify-between border-t border-[#EEECE5] pt-4">
+                    <div>
+                      <p className="text-xs text-[#85877F]">Starting from</p>
+
+                      <p className="mt-1 font-semibold text-[#526B57]">
+                        ৳{service.price.toLocaleString("en-BD")}
+                      </p>
+                    </div>
+
+                    <Link
+                      href={`/services/${service._id}`}
+                      aria-label={`View ${service.serviceName}`}
+                      className="rounded-full bg-[#E9EDE5] p-3 text-[#526B57] transition hover:bg-[#526B57] hover:text-white"
+                    >
+                      <ArrowUpRight size={19} />
+                    </Link>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Why Choose Us */}

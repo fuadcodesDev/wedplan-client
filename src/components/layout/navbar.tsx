@@ -1,15 +1,23 @@
 
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Menu, X, LogOut, UserRound } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
 
-export default function Navbar() {
+function NavbarContent() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
+  const [loggingOut, setLoggingOut] = useState(false);
+
   const pathname = usePathname();
+  const router = useRouter();
+
+  const { data: session, isPending } = authClient.useSession();
+
+  const isLoggedIn = !!session?.user;
 
   const getLinkClass = (href: string) => {
     const isActive = pathname === href;
@@ -31,6 +39,21 @@ export default function Navbar() {
 
   const closeMenu = () => {
     setMenuOpen(false);
+  };
+
+  const handleLogout = async () => {
+    setLoggingOut(true);
+
+    try {
+      await authClient.signOut();
+      closeMenu();
+      router.push("/");
+      router.refresh();
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
+      setLoggingOut(false);
+    }
   };
 
   return (
@@ -61,39 +84,65 @@ export default function Navbar() {
           </Link>
 
           <Link
-  href="/#categories"
-  onClick={() => setActiveSection("categories")}
-  className={getSectionClass("categories")}
->
-  Categories
-</Link>
+            href="/#categories"
+            onClick={() => setActiveSection("categories")}
+            className={getSectionClass("categories")}
+          >
+            Categories
+          </Link>
 
           <Link
-  href="/#about"
-  onClick={() => {
-    closeMenu();
-    setActiveSection("about");
-  }}
-  className={getSectionClass("about")}
->
-  About Us
-</Link>
+            href="/#about"
+            onClick={() => {
+              closeMenu();
+              setActiveSection("about");
+            }}
+            className={getSectionClass("about")}
+          >
+            About Us
+          </Link>
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          <Link
-            href="/sign-in"
-            className="rounded-full px-5 py-2.5 text-sm font-medium transition hover:bg-[#EEECE5]"
-          >
-            Sign In
-          </Link>
+          {isPending ? (
+            <div className="h-10 w-28 animate-pulse rounded-full bg-[#EEECE5]" />
+          ) : isLoggedIn ? (
+            <>
+              <Link
+                href="/dashboard"
+                className="flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium text-[#303B32] transition hover:bg-[#EEECE5]"
+              >
+                <UserRound size={17} />
+                {session.user.name || "My Account"}
+              </Link>
 
-          <Link
-            href="/sign-up"
-            className="rounded-full bg-[#526B57] px-6 py-3 text-sm font-medium text-white transition hover:bg-[#405744]"
-          >
-            Get Started
-          </Link>
+              <button
+                type="button"
+                onClick={handleLogout}
+                disabled={loggingOut}
+                className="flex items-center gap-2 rounded-full bg-[#526B57] px-5 py-3 text-sm font-medium text-white transition hover:bg-[#405744] disabled:opacity-60"
+              >
+                <LogOut size={16} />
+                {loggingOut ? "Logging out..." : "Logout"}
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/sign-in"
+                className="rounded-full px-5 py-2.5 text-sm font-medium transition hover:bg-[#EEECE5]"
+              >
+                Sign In
+              </Link>
+
+              <Link
+                href="/sign-up"
+                className="rounded-full bg-[#526B57] px-6 py-3 text-sm font-medium text-white transition hover:bg-[#405744]"
+              >
+                Get Started
+              </Link>
+            </>
+          )}
         </div>
 
         <button
@@ -129,48 +178,83 @@ export default function Navbar() {
               Browse Services
             </Link>
 
-<Link
-  href="/#categories"
-  onClick={() => {
-    closeMenu();
-    setActiveSection("categories");
-  }}
-  className={getSectionClass("categories")}
->
-  Categories
-</Link>
+            <Link
+              href="/#categories"
+              onClick={() => {
+                closeMenu();
+                setActiveSection("categories");
+              }}
+              className={getSectionClass("categories")}
+            >
+              Categories
+            </Link>
 
-           <Link
-  href="/#about"
-  onClick={() => {
-    closeMenu();
-    setActiveSection("about");
-  }}
-  className={getSectionClass("about")}
->
-  About Us
-</Link>
+            <Link
+              href="/#about"
+              onClick={() => {
+                closeMenu();
+                setActiveSection("about");
+              }}
+              className={getSectionClass("about")}
+            >
+              About Us
+            </Link>
 
-            <div className="flex gap-3 border-t border-[#EAE7DF] pt-4">
-              <Link
-                href="/sign-in"
-                onClick={closeMenu}
-                className="flex-1 rounded-full border border-[#526B57] py-3 text-center"
-              >
-                Sign In
-              </Link>
+            <div className="flex flex-col gap-3 border-t border-[#EAE7DF] pt-4">
+              {isPending ? (
+                <div className="h-10 animate-pulse rounded-full bg-[#EEECE5]" />
+              ) : isLoggedIn ? (
+                <>
+                  <Link
+                    href="/dashboard"
+                    onClick={closeMenu}
+                    className="flex items-center justify-center gap-2 rounded-full border border-[#526B57] py-3 text-[#303B32]"
+                  >
+                    <UserRound size={17} />
+                    {session.user.name || "My Account"}
+                  </Link>
 
-              <Link
-                href="/sign-up"
-                onClick={closeMenu}
-                className="flex-1 rounded-full bg-[#526B57] py-3 text-center text-white"
-              >
-                Get Started
-              </Link>
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    disabled={loggingOut}
+                    className="flex items-center justify-center gap-2 rounded-full bg-[#526B57] py-3 text-white disabled:opacity-60"
+                  >
+                    <LogOut size={16} />
+                    {loggingOut ? "Logging out..." : "Logout"}
+                  </button>
+                </>
+              ) : (
+                <div className="flex gap-3">
+                  <Link
+                    href="/sign-in"
+                    onClick={closeMenu}
+                    className="flex-1 rounded-full border border-[#526B57] py-3 text-center"
+                  >
+                    Sign In
+                  </Link>
+
+                  <Link
+                    href="/sign-up"
+                    onClick={closeMenu}
+                    className="flex-1 rounded-full bg-[#526B57] py-3 text-center text-white"
+                  >
+                    Get Started
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </nav>
       )}
     </header>
+  );
+}
+
+export default function Navbar() {
+  return (
+    <Suspense fallback={<div className="h-20 bg-[#FAF9F6]" />}>
+      <NavbarContent />
+    </Suspense>
   );
 }
