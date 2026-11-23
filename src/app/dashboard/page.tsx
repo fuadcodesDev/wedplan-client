@@ -85,21 +85,13 @@ export default function DashboardPage() {
 
         setStats({
           total: bookings.length,
-          pending: bookings.filter(
-            (booking) => booking.status === "pending"
-          ).length,
-          accepted: bookings.filter(
-            (booking) => booking.status === "accepted"
-          ).length,
-          rejected: bookings.filter(
-            (booking) => booking.status === "rejected"
-          ).length,
+          pending: bookings.filter((booking) => booking.status === "pending").length,
+          accepted: bookings.filter((booking) => booking.status === "accepted").length,
+          rejected: bookings.filter((booking) => booking.status === "rejected").length,
         });
       } catch (error) {
         setBookingError(
-          error instanceof Error
-            ? error.message
-            : "Something went wrong"
+          error instanceof Error ? error.message : "Something went wrong"
         );
       } finally {
         setBookingsLoading(false);
@@ -112,9 +104,7 @@ export default function DashboardPage() {
   if (isPending || !session || !user) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#FAF9F6]">
-        <p className="text-sm text-gray-500">
-          Loading your dashboard...
-        </p>
+        <p className="text-sm text-gray-500">Loading your dashboard...</p>
       </main>
     );
   }
@@ -173,26 +163,10 @@ export default function DashboardPage() {
   const DashboardIcon = currentDashboard.icon;
 
   const customerStats = [
-    {
-      title: "Total Bookings",
-      value: stats.total,
-      icon: ClipboardList,
-    },
-    {
-      title: "Pending",
-      value: stats.pending,
-      icon: Clock,
-    },
-    {
-      title: "Accepted",
-      value: stats.accepted,
-      icon: CheckCircle,
-    },
-    {
-      title: "Rejected",
-      value: stats.rejected,
-      icon: XCircle,
-    },
+    { title: "Total Bookings", value: stats.total, icon: ClipboardList },
+    { title: "Pending", value: stats.pending, icon: Clock },
+    { title: "Accepted", value: stats.accepted, icon: CheckCircle },
+    { title: "Rejected", value: stats.rejected, icon: XCircle },
   ];
 
   return (
@@ -230,9 +204,7 @@ export default function DashboardPage() {
                 <h2 className="font-semibold text-[#303B32]">
                   Your Account
                 </h2>
-                <p className="text-sm text-gray-500">
-                  {user.name}
-                </p>
+                <p className="text-sm text-gray-500">{user.name}</p>
               </div>
             </div>
 
@@ -253,9 +225,7 @@ export default function DashboardPage() {
                 </p>
               )}
 
-              <p className="text-sm text-gray-500">
-                Email: {user.email}
-              </p>
+              <p className="text-sm text-gray-500">Email: {user.email}</p>
             </div>
           </div>
 
@@ -278,7 +248,7 @@ export default function DashboardPage() {
           </Link>
         </div>
 
-        {role === "customer" ? (
+        {role === "customer" && (
           <section className="mt-8">
             <h2 className="mb-5 text-xl font-semibold text-[#303B32]">
               Booking Overview
@@ -300,16 +270,16 @@ export default function DashboardPage() {
                     className="rounded-2xl border border-[#EAE7DF] bg-white p-5 shadow-sm"
                   >
                     <div className="flex items-center justify-between">
-                      <p className="text-sm text-gray-500">
-                        {item.title}
-                      </p>
+                      <p className="text-sm text-gray-500">{item.title}</p>
                       <div className="rounded-xl bg-[#F2EEE6] p-2 text-[#A47D52]">
                         <Icon size={21} />
                       </div>
                     </div>
 
                     <p className="mt-4 text-3xl font-semibold text-[#303B32]">
-                      {bookingsLoading ? "..." : stats[item.title === "Total Bookings" ? "total" : item.title.toLowerCase() as keyof DashboardStats]}
+                      {bookingsLoading
+                        ? "..."
+                        : item.value}
                     </p>
                   </div>
                 );
@@ -333,7 +303,43 @@ export default function DashboardPage() {
               </Link>
             </div>
           </section>
-        ) : (
+        )}
+
+        {role === "vendor" && (
+          <section className="mt-8 rounded-2xl border border-[#EAE7DF] bg-white p-6 shadow-sm">
+            <h2 className="text-xl font-semibold text-[#303B32]">
+              Manage Your Services
+            </h2>
+
+            <p className="mt-2 text-sm text-gray-500">
+              Add new wedding services or manage the services you already offer.
+            </p>
+
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link
+                href="/dashboard/services"
+                className="inline-flex rounded-full bg-[#526B57] px-6 py-3 text-sm font-medium text-white transition hover:bg-[#405345]"
+              >
+                My Services
+              </Link>
+
+              <Link
+                href="/dashboard/services/add"
+                className="inline-flex rounded-full border border-[#A47D52] px-6 py-3 text-sm font-medium text-[#A47D52] transition hover:bg-[#F2EEE6]"
+              >
+                + Add Service
+              </Link>
+              <Link
+  href="/dashboard/booking-requests"
+  className="inline-flex rounded-full border border-[#A47D52] px-6 py-3 text-sm font-medium text-[#A47D52] transition hover:bg-[#F2EEE6]"
+>
+  Booking Requests
+</Link>
+            </div>
+          </section>
+        )}
+
+        {(role === "admin") && (
           <section className="mt-8 rounded-2xl border border-[#EAE7DF] bg-white p-6 shadow-sm">
             <h2 className="text-lg font-semibold text-[#303B32]">
               Dashboard Features
@@ -345,10 +351,7 @@ export default function DashboardPage() {
                   key={section}
                   className="rounded-xl bg-[#FAF9F6] p-5"
                 >
-                  <LayoutDashboard
-                    size={21}
-                    className="text-[#A47D52]"
-                  />
+                  <LayoutDashboard size={21} className="text-[#A47D52]" />
                   <p className="mt-3 text-sm font-medium text-[#303B32]">
                     {section}
                   </p>
