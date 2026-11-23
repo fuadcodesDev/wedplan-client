@@ -7,6 +7,14 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, UserRound, Save } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 
+type ProfileUser = {
+  name: string;
+  email: string;
+  image?: string | null;
+  role?: string;
+  subscriptionPlan?: string;
+};
+
 export default function ProfilePage() {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
@@ -17,12 +25,7 @@ export default function ProfilePage() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  const user = session?.user as
-    | (typeof session.user & {
-        role?: string;
-        subscriptionPlan?: string;
-      })
-    | undefined;
+  const user = session?.user as ProfileUser | undefined;
 
   useEffect(() => {
     if (!isPending && !session) {
@@ -174,7 +177,7 @@ export default function ProfilePage() {
                 className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm outline-none focus:border-[#8B6B4A]"
               />
               <p className="mt-1 text-xs text-gray-400">
-                We'll connect ImgBB image uploading in the next step.
+                ImgBB image uploading will be connected next.
               </p>
             </div>
 
