@@ -15,6 +15,12 @@ import {
   Clock,
   CheckCircle,
   XCircle,
+  Users,
+  PackageCheck,
+  CreditCard,
+  ArrowUpRight,
+  Settings,
+  Search,
 } from "lucide-react";
 
 type Booking = {
@@ -132,7 +138,7 @@ export default function DashboardPage() {
     },
     admin: {
       title: "Admin Dashboard",
-      description: "Manage the WedPlan platform.",
+      description: "Oversee users, wedding services, and platform activity.",
       icon: ShieldCheck,
       sections: [
         "Manage users",
@@ -169,9 +175,43 @@ export default function DashboardPage() {
     { title: "Rejected", value: stats.rejected, icon: XCircle },
   ];
 
+  const adminStats = [
+    {
+      title: "Total Users",
+      description: "Registered platform accounts",
+      icon: Users,
+    },
+    {
+      title: "Total Vendors",
+      description: "Wedding service providers",
+      icon: Store,
+    },
+    {
+      title: "Total Customers",
+      description: "Customers using WedPlan",
+      icon: UserRound,
+    },
+    {
+      title: "Pending Services",
+      description: "Services awaiting review",
+      icon: Clock,
+    },
+    {
+      title: "Total Services",
+      description: "Services submitted to the platform",
+      icon: PackageCheck,
+    },
+    {
+      title: "Transactions",
+      description: "Platform payment records",
+      icon: CreditCard,
+    },
+  ];
+
   return (
-    <main className="min-h-screen bg-[#FAF9F6] px-4 py-10 sm:px-8 lg:px-12">
+    <main className="min-h-screen bg-[#FAF9F6] px-4 py-8 sm:px-8 sm:py-10 lg:px-12">
       <div className="mx-auto max-w-7xl">
+        {/* Page heading */}
         <div className="mb-8">
           <Link
             href="/"
@@ -184,7 +224,7 @@ export default function DashboardPage() {
             Welcome to WedPlan
           </p>
 
-          <h1 className="mt-2 text-3xl font-semibold text-[#303B32]">
+          <h1 className="mt-2 text-3xl font-semibold text-[#303B32] sm:text-4xl">
             {currentDashboard.title}
           </h1>
 
@@ -193,6 +233,7 @@ export default function DashboardPage() {
           </p>
         </div>
 
+        {/* Account information and profile */}
         <div className="grid gap-6 md:grid-cols-3">
           <div className="rounded-2xl border border-[#EAE7DF] bg-white p-6 shadow-sm md:col-span-2">
             <div className="flex items-center gap-3">
@@ -248,6 +289,7 @@ export default function DashboardPage() {
           </Link>
         </div>
 
+        {/* Customer dashboard */}
         {role === "customer" && (
           <section className="mt-8">
             <h2 className="mb-5 text-xl font-semibold text-[#303B32]">
@@ -277,9 +319,7 @@ export default function DashboardPage() {
                     </div>
 
                     <p className="mt-4 text-3xl font-semibold text-[#303B32]">
-                      {bookingsLoading
-                        ? "..."
-                        : item.value}
+                      {bookingsLoading ? "..." : item.value}
                     </p>
                   </div>
                 );
@@ -305,6 +345,7 @@ export default function DashboardPage() {
           </section>
         )}
 
+        {/* Vendor dashboard */}
         {role === "vendor" && (
           <section className="mt-8 rounded-2xl border border-[#EAE7DF] bg-white p-6 shadow-sm">
             <h2 className="text-xl font-semibold text-[#303B32]">
@@ -329,36 +370,193 @@ export default function DashboardPage() {
               >
                 + Add Service
               </Link>
+
               <Link
-  href="/dashboard/booking-requests"
-  className="inline-flex rounded-full border border-[#A47D52] px-6 py-3 text-sm font-medium text-[#A47D52] transition hover:bg-[#F2EEE6]"
->
-  Booking Requests
-</Link>
+                href="/dashboard/booking-requests"
+                className="inline-flex rounded-full border border-[#A47D52] px-6 py-3 text-sm font-medium text-[#A47D52] transition hover:bg-[#F2EEE6]"
+              >
+                Booking Requests
+              </Link>
             </div>
           </section>
         )}
 
-        {(role === "admin") && (
-          <section className="mt-8 rounded-2xl border border-[#EAE7DF] bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-[#303B32]">
-              Dashboard Features
-            </h2>
-
-            <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {currentDashboard.sections.map((section) => (
-                <div
-                  key={section}
-                  className="rounded-xl bg-[#FAF9F6] p-5"
-                >
-                  <LayoutDashboard size={21} className="text-[#A47D52]" />
-                  <p className="mt-3 text-sm font-medium text-[#303B32]">
-                    {section}
-                  </p>
+        {/* Admin dashboard */}
+        {role === "admin" && (
+          <div className="mt-8 space-y-8">
+            {/* Admin welcome panel */}
+            <section className="relative overflow-hidden rounded-3xl bg-[#354137] p-7 text-white shadow-sm sm:p-9">
+              <div className="relative z-10 max-w-2xl">
+                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 text-[#E5C99F]">
+                  <ShieldCheck size={26} />
                 </div>
-              ))}
-            </div>
-          </section>
+
+                <p className="text-sm font-medium text-[#E5C99F]">
+                  WedPlan Administration
+                </p>
+
+                <h2 className="mt-2 text-2xl font-semibold sm:text-3xl">
+                  Welcome back, {user.name}
+                </h2>
+
+                <p className="mt-3 text-sm leading-6 text-white/70 sm:text-base">
+                  Manage your wedding planning platform from one place.
+                  Review service submissions, oversee accounts, and monitor
+                  platform activity.
+                </p>
+              </div>
+
+              <div className="pointer-events-none absolute -right-12 -top-16 h-64 w-64 rounded-full border border-white/10" />
+              <div className="pointer-events-none absolute -right-2 -top-6 h-44 w-44 rounded-full border border-white/10" />
+            </section>
+
+            {/* Admin statistics */}
+            <section>
+              <div className="mb-5">
+                <p className="text-sm font-medium text-[#A47D52]">
+                  Platform Summary
+                </p>
+                <h2 className="mt-1 text-xl font-semibold text-[#303B32]">
+                  Overview Statistics
+                </h2>
+                <p className="mt-1 text-sm text-gray-500">
+                  These statistics will be connected to the admin API next.
+                </p>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                {adminStats.map((item) => {
+                  const Icon = item.icon;
+
+                  return (
+                    <div
+                      key={item.title}
+                      className="rounded-2xl border border-[#EAE7DF] bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-gray-500">
+                            {item.title}
+                          </p>
+                          <p className="mt-3 text-3xl font-semibold text-[#303B32]">
+                            —
+                          </p>
+                        </div>
+
+                        <div className="rounded-xl bg-[#F2EEE6] p-3 text-[#A47D52]">
+                          <Icon size={22} />
+                        </div>
+                      </div>
+
+                      <p className="mt-3 text-xs text-gray-400">
+                        {item.description}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* Admin management areas */}
+            <section>
+              <div className="mb-5">
+                <p className="text-sm font-medium text-[#A47D52]">
+                  Administration
+                </p>
+                <h2 className="mt-1 text-xl font-semibold text-[#303B32]">
+                  Platform Management
+                </h2>
+                <p className="mt-1 text-sm text-gray-500">
+                  Your main administration workspaces.
+                </p>
+              </div>
+
+              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                <div className="rounded-2xl border border-[#EAE7DF] bg-white p-6 shadow-sm">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F2EEE6] text-[#A47D52]">
+                    <Users size={23} />
+                  </div>
+
+                  <h3 className="mt-5 font-semibold text-[#303B32]">
+                    Manage Users
+                  </h3>
+
+                  <p className="mt-2 text-sm leading-6 text-gray-500">
+                    View customer and vendor accounts, search users, and
+                    manage account access.
+                  </p>
+
+                  <div className="mt-5 flex items-center gap-2 text-xs font-medium text-[#A47D52]">
+                    <Settings size={15} />
+                    Workspace coming next
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-[#EAE7DF] bg-white p-6 shadow-sm">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F2EEE6] text-[#A47D52]">
+                    <PackageCheck size={23} />
+                  </div>
+
+                  <h3 className="mt-5 font-semibold text-[#303B32]">
+                    Manage Services
+                  </h3>
+
+                  <p className="mt-2 text-sm leading-6 text-gray-500">
+                    Review vendor submissions, approve or reject services,
+                    and manage published listings.
+                  </p>
+
+                  <div className="mt-5 flex items-center gap-2 text-xs font-medium text-[#A47D52]">
+                    <Search size={15} />
+                    Workspace coming next
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-[#EAE7DF] bg-white p-6 shadow-sm">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F2EEE6] text-[#A47D52]">
+                    <CreditCard size={23} />
+                  </div>
+
+                  <h3 className="mt-5 font-semibold text-[#303B32]">
+                    Transactions
+                  </h3>
+
+                  <p className="mt-2 text-sm leading-6 text-gray-500">
+                    Review payment records and monitor vendor subscription
+                    transactions.
+                  </p>
+
+                  <div className="mt-5 flex items-center gap-2 text-xs font-medium text-[#A47D52]">
+                    <Settings size={15} />
+                    Workspace coming next
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            {/* Admin account information */}
+            <section className="rounded-2xl border border-[#EAE7DF] bg-white p-6 shadow-sm">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm font-medium text-[#A47D52]">
+                    Account Information
+                  </p>
+                  <h2 className="mt-1 font-semibold text-[#303B32]">
+                    Administrator Account
+                  </h2>
+                  <p className="mt-2 text-sm text-gray-500">{user.email}</p>
+                </div>
+
+                <Link
+                  href="/dashboard/profile"
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-[#EAE7DF] px-5 py-3 text-sm font-medium text-[#526B57] transition hover:bg-[#FAF9F6]"
+                >
+                  Update Profile
+                  <ArrowUpRight size={16} />
+                </Link>
+              </div>
+            </section>
+          </div>
         )}
       </div>
     </main>
