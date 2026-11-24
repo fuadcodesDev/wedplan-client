@@ -471,67 +471,57 @@ export default function DashboardPage() {
                 </p>
               </div>
 
-              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-                <div className="rounded-2xl border border-[#EAE7DF] bg-white p-6 shadow-sm">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F2EEE6] text-[#A47D52]">
-                    <Users size={23} />
-                  </div>
+              
+<div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+  <Link
+    href="/dashboard/manage-users"
+    className="rounded-2xl border border-[#EAE7DF] bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+  >
+    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F2EEE6] text-[#A47D52]">
+      <Users size={23} />
+    </div>
+    <h3 className="mt-5 font-semibold text-[#303B32]">Manage Users</h3>
+    <p className="mt-2 text-sm leading-6 text-gray-500">
+      View customer and vendor accounts, search users, and manage account access.
+    </p>
+    <div className="mt-5 flex items-center gap-2 text-xs font-medium text-[#A47D52]">
+      Open workspace <ArrowUpRight size={15} />
+    </div>
+  </Link>
 
-                  <h3 className="mt-5 font-semibold text-[#303B32]">
-                    Manage Users
-                  </h3>
+  <Link
+    href="/dashboard/manage-services"
+    className="rounded-2xl border border-[#EAE7DF] bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+  >
+    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F2EEE6] text-[#A47D52]">
+      <PackageCheck size={23} />
+    </div>
+    <h3 className="mt-5 font-semibold text-[#303B32]">Manage Services</h3>
+    <p className="mt-2 text-sm leading-6 text-gray-500">
+      Review vendor submissions, approve or reject services, and manage published listings.
+    </p>
+    <div className="mt-5 flex items-center gap-2 text-xs font-medium text-[#A47D52]">
+      Open workspace <ArrowUpRight size={15} />
+    </div>
+  </Link>
 
-                  <p className="mt-2 text-sm leading-6 text-gray-500">
-                    View customer and vendor accounts, search users, and
-                    manage account access.
-                  </p>
+  <Link
+    href="/dashboard/transactions"
+    className="rounded-2xl border border-[#EAE7DF] bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+  >
+    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F2EEE6] text-[#A47D52]">
+      <CreditCard size={23} />
+    </div>
+    <h3 className="mt-5 font-semibold text-[#303B32]">Transactions</h3>
+    <p className="mt-2 text-sm leading-6 text-gray-500">
+      Review payment records and monitor vendor subscription transactions.
+    </p>
+    <div className="mt-5 flex items-center gap-2 text-xs font-medium text-[#A47D52]">
+      Open workspace <ArrowUpRight size={15} />
+    </div>
+  </Link>
+</div>
 
-                  <div className="mt-5 flex items-center gap-2 text-xs font-medium text-[#A47D52]">
-                    <Settings size={15} />
-                    Workspace coming next
-                  </div>
-                </div>
-
-                <div className="rounded-2xl border border-[#EAE7DF] bg-white p-6 shadow-sm">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F2EEE6] text-[#A47D52]">
-                    <PackageCheck size={23} />
-                  </div>
-
-                  <h3 className="mt-5 font-semibold text-[#303B32]">
-                    Manage Services
-                  </h3>
-
-                  <p className="mt-2 text-sm leading-6 text-gray-500">
-                    Review vendor submissions, approve or reject services,
-                    and manage published listings.
-                  </p>
-
-                  <div className="mt-5 flex items-center gap-2 text-xs font-medium text-[#A47D52]">
-                    <Search size={15} />
-                    Workspace coming next
-                  </div>
-                </div>
-
-                <div className="rounded-2xl border border-[#EAE7DF] bg-white p-6 shadow-sm">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F2EEE6] text-[#A47D52]">
-                    <CreditCard size={23} />
-                  </div>
-
-                  <h3 className="mt-5 font-semibold text-[#303B32]">
-                    Transactions
-                  </h3>
-
-                  <p className="mt-2 text-sm leading-6 text-gray-500">
-                    Review payment records and monitor vendor subscription
-                    transactions.
-                  </p>
-
-                  <div className="mt-5 flex items-center gap-2 text-xs font-medium text-[#A47D52]">
-                    <Settings size={15} />
-                    Workspace coming next
-                  </div>
-                </div>
-              </div>
             </section>
 
             {/* Admin account information */}
